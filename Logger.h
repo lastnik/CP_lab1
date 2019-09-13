@@ -1,6 +1,12 @@
 #pragma once
 #include <string>
 #include <fstream>
+#include <cstdarg>
+#include <iomanip>
+#include <cstdio>
+#include <unordered_set>
+#include "Exeptions.h"
+
 namespace Log
 {
 enum Level : uint64_t
@@ -13,20 +19,70 @@ enum Level : uint64_t
     , off
 };
 
-//enum Task : uint64_t
-//{
-//    notask = 0
-//};
+template<Level level>
+inline char const* toStr()
+{
+    return "off";
+}
+template<>
+inline char const* toStr<Level::debug>()
+{
+    return "Debug";
+}
+template<>
+inline char const* toStr<Level::info>()
+{
+    return "Info";
+}
+template<>
+inline char const* toStr<Level::warning>()
+{
+    return "Warning";
+}
+
+template<>
+inline char const* toStr<Level::error>()
+{
+    return "Error";
+}
+template<>
+inline char const* toStr<Level::fatal>()
+{
+    return "Fatal";
+}
 
 }
 
 class Logger
 {
-    static std::string file;
+    static char const* file;
     static std::fstream out;
     static bool isStarted;
+    static Log::Level level;
+    static char buffer[256];
 public:
     static void start();
-    static void print(Log::Level, char* , ... );
     static void stop();
+    template<Log::Level logLevel>
+    static void print(char const* , ... );
+    static void setLevel(Log::Level const&);
 };
+
+template<Log::Level logLevel>
+void Logger::print(char const* str, ...)
+{
+    if(!isStarted)
+    {
+        throw error::ExeptionBase<error::ErrorList::LogError>("Logger wasn't start yet");
+    }
+    if(logLevel < level)
+    {
+        return;
+    }
+    va_list arg;
+    va_start(arg, str);
+    char* k = new (buffer)char[256];
+    vsprintf(k, str, arg);
+    out << std::setfill(' ') << std::setw(7) << Log::toStr<logLevel>() << ": " << k << std::endl;
+    out.flush();
+}

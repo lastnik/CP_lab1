@@ -1,9 +1,12 @@
 #include "BigInt.h"
-#include ""
+#include "Exeptions.h"
+#include "Logger.h"
+#include <cstdint>
+
 namespace details
 {
 
-inline uint8_t convert(char const& a)
+inline uint16_t convert(char const& a)
 {
     if(a >= '0' && a <= '9')
     {
@@ -16,28 +19,29 @@ inline uint8_t convert(char const& a)
         return a - 'a' + 10;
     } else
     {
-        throw ;
+        throw error::ExeptionBase<error::ErrorList::InputError>(std::string("Can't convert value: ") + a);
     }
 }
 
 }
 
-
 BigInt::BigInt():number(0)
 {}
 
-BigInt::BigInt(std::string const& str)
+void BigInt::setByString(std::string const& str)
 {
     uint64_t biteSize = 0;
     for(auto i : str)
     {
-        if(biteSize % 8 == 0)
+        try
         {
-            number.push_back(0);
-
-        }else
+            number.push_back((biteSize % 8 == 0 ? details::convert(i) : (details::convert(i) << 4)));
+        }
+        catch(error::Exeption& exp)
         {
-
+            number.clear();
+            Logger::print<Log::Level::fatal>(exp.what());
+            throw error::ExeptionBase<error::ErrorList::FatalTrace>("Fail function BigInt::setByString()");
         }
         biteSize += 4;
     }

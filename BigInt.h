@@ -8,9 +8,10 @@ class BigInt {
 
 public:
     explicit BigInt();
-    explicit BigInt(std::string const&); //values should be in hex format
-    explicit BigInt(BigInt const&);
-    //friend Field::operator
+    BigInt(BigInt const&) = default;
+    BigInt& operator=(BigInt const&) = default;
+
+    void setByString(std::string const&); //values should be in hex format
 private:
     std::vector<uint8_t> number;
 };

@@ -1,35 +1,62 @@
 #pragma once
-
-#include <stdint.h>
+#include <exception>
+#include <cstdint>
 #include <string>
+#include <utility>
 
 namespace error
 {
 enum ErrorList : uint64_t
 {
       InputError = 0
+    , LogError
+    , FatalTrace
     , Total
 };
 
-class Exeption
+class Exeption : public std::exception
 {
-public:
-    Exeption(std::string const& _str) : str(_str){};
     std::string str;
+    std::string desc;
+public:
+    explicit Exeption(std::string _str, std::string _desc) : str(std::move(_str)),  desc(std::move(_desc)) {};
+    const char* what() const noexcept final
+    {
+        return (str + " " + desc).c_str();
+    }
 };
 
 template<ErrorList value>
-class ExeptionBase : public Exeption
+class ExeptionBase;
+
+template <>
+class ExeptionBase<LogError> : public Exeption
 {
 public:
-    ExeptionBase() : Exeption("This last one exeption") {};
+    explicit ExeptionBase(const std::string& _desc) : Exeption("Log error exeption", _desc){};
 };
 
 template <>
 class ExeptionBase<InputError> : public Exeption
 {
 public:
-    ExeptionBase() : Exeption("Input error exeption") {};
+    explicit ExeptionBase(const std::string& _desc) : Exeption("Input error exeption", _desc){};
+
+};
+
+template <>
+class ExeptionBase<FatalTrace> : public Exeption
+{
+public:
+    explicit ExeptionBase(const std::string& _desc) : Exeption("Fatal trace exeption", _desc){};
+
+};
+
+template<ErrorList value>
+class ExeptionBase : public Exeption
+{
+public:
+    explicit ExeptionBase(const std::string& _desc) : Exeption("This last one exeption", _desc){};
 };
 
 

@@ -1,6 +1,3 @@
-//
-// Created by lastochk on 9/12/2019.
-//
 #include "IntegerMod.h"
 namespace Field
 {
