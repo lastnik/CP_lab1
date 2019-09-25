@@ -39,7 +39,6 @@ inline char const* toStr<Level::warning>()
 {
     return "Warning";
 }
-
 template<>
 inline char const* toStr<Level::error>()
 {
@@ -66,7 +65,9 @@ public:
     template<Log::Level logLevel>
     static void print(char const* , ... );
     static void setLevel(Log::Level const&);
+    static void setLevel(std::string const& str);
 };
+
 
 template<Log::Level logLevel>
 void Logger::print(char const* str, ...)
@@ -81,8 +82,8 @@ void Logger::print(char const* str, ...)
     }
     va_list arg;
     va_start(arg, str);
-    char* k = new (buffer)char[256];
-    vsprintf(k, str, arg);
-    out << std::setfill(' ') << std::setw(7) << Log::toStr<logLevel>() << ": " << k << std::endl;
+    for(char& i : buffer) i = '\0';
+    vsprintf(buffer, str, arg);
+    out << std::setfill(' ') << std::setw(7) << Log::toStr<logLevel>() << ": " << buffer << std::endl;
     out.flush();
 }

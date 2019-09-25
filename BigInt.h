@@ -2,16 +2,84 @@
 #include <string>
 #include <cstdint>
 #include <vector>
-#include "Field.h"
+namespace  BigInteger
+{
 
-class BigInt {
+
+
+class BigInt
+{
 
 public:
     explicit BigInt();
-    BigInt(BigInt const&) = default;
-    BigInt& operator=(BigInt const&) = default;
 
-    void setByString(std::string const&); //values should be in hex format
-private:
+    BigInt(BigInt const &) = default;
+
+    BigInt& operator=(BigInt const &) = default;
+
+    BigInt operator%(BigInt const &) const;
+
+    void setByString(std::string const &); //values should be in hex format
+
+    std::string toString() const; //values should be in hex format
+
+    friend BigInt operator*(BigInt const &, BigInt const &);
+
+    friend BigInt operator+(BigInt const &, BigInt const &);
+
+    friend BigInt operator-(BigInt const &, BigInt const &);
+
+    friend BigInt operator/(BigInt const &, BigInt const &);
+
+    friend BigInt operator^(BigInt const &, BigInt const &);
+
+    BigInt& operator*=(BigInt const &);
+
+    BigInt& operator+=(BigInt const &);
+
+    BigInt& operator-=(BigInt const &);
+
+    BigInt& operator/=(BigInt const &);
+
+    BigInt& operator^=(BigInt const &);
+    //prefix
+    friend BigInt& operator++(BigInt&);
+
+    friend BigInt& operator--(BigInt&);
+    //postfix
+
+    friend BigInt operator++(BigInt&, int);
+
+    friend BigInt operator--(BigInt&, int);
+
+
+    friend BigInt& operator<<=(BigInt&, uint64_t);
+
+    friend BigInt& operator>>=(BigInt&, uint64_t);
+
+    friend BigInt operator<<(BigInt const &, uint64_t);
+
+    friend BigInt operator>>(BigInt const &, uint64_t);
+
+    friend bool operator>(BigInt const &, BigInt const &);
+
+    friend bool operator<(BigInt const &, BigInt const &);
+
+    friend bool operator!=(BigInt const &, BigInt const &);
+
+    friend bool operator==(BigInt const &, BigInt const &);
+
+    friend bool operator>=(BigInt const &, BigInt const &);
+
+    friend bool operator<=(BigInt const &, BigInt const &);
+
+    size_t getBitSize() const { return bitSize;}
+protected:
+    void calcBitSize();
     std::vector<uint8_t> number;
+    size_t bitSize;
 };
+
+BigInt operator""_BigInt(const char* str, size_t);
+
+}

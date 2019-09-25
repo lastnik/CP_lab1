@@ -11,18 +11,19 @@ enum ErrorList : uint64_t
       InputError = 0
     , LogError
     , FatalTrace
+    , ArithmeticError
     , Total
 };
 
-class Exeption : public std::exception
+class Exeption
 {
     std::string str;
     std::string desc;
 public:
     explicit Exeption(std::string _str, std::string _desc) : str(std::move(_str)),  desc(std::move(_desc)) {};
-    const char* what() const noexcept final
+    std::string what() const
     {
-        return (str + " " + desc).c_str();
+        return (str + " " + desc);
     }
 };
 
@@ -46,6 +47,14 @@ public:
 
 template <>
 class ExeptionBase<FatalTrace> : public Exeption
+{
+public:
+    explicit ExeptionBase(const std::string& _desc) : Exeption("Fatal trace exeption", _desc){};
+
+};
+
+template <>
+class ExeptionBase<ArithmeticError> : public Exeption
 {
 public:
     explicit ExeptionBase(const std::string& _desc) : Exeption("Fatal trace exeption", _desc){};

@@ -34,7 +34,19 @@ void Logger::stop()
     }
     isStarted = false;
 }
-
+void Logger::setLevel(std::string const& str)
+{
+    if(str == "debug")
+        level = Log::Level::debug;
+    else if(str == "info")
+        level = Log::Level::info;
+    else if(str == "warning")
+        level = Log::Level::warning;
+    else if(str == "error")
+        level = Log::Level::error;
+    else if(str == "fatal")
+        level = Log::Level::fatal;
+}
 void Logger::setLevel(Log::Level const& logLevel)
 {
     level = logLevel;
